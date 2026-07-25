@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="350" viewBox="0 0 1200 350" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title description">
+  <title id="title">Khushal Dangar — CS and AI student and product builder</title>
+  <desc id="description">A restrained Matrix-inspired terminal header with green digital rain and a system online indicator.</desc>
+
+  <defs>
+    <style>
+      @media (max-width: 600px) {
+        .mobile-detail { display: none; }
+        .identity-name { font-size: 64px; letter-spacing: 3px; }
+        .identity-role { font-size: 32px; letter-spacing: 2px; }
+      }
+    </style>
+    <view id="footer-divider" viewBox="0 346 1200 4" preserveAspectRatio="none"/>
+    <linearGradient id="background" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#020403"/>
+      <stop offset="1" stop-color="#071009"/>
+    </linearGradient>
+    <linearGradient id="rainFade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#39ff14" stop-opacity="0"/>
+      <stop offset="0.55" stop-color="#39ff14" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#9aff8a" stop-opacity="0.04"/>
+    </linearGradient>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <clipPath id="frameClip">
+      <rect x="1" y="1" width="1198" height="348" rx="12"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#frameClip)">
+    <rect width="1200" height="350" fill="url(#background)"/>
+    <path d="M0 44H1200M0 306H1200" stroke="#39ff14" stroke-opacity="0.08"/>
+    <path d="M72 0V350M1128 0V350" stroke="#39ff14" stroke-opacity="0.06"/>
+
+    <g fill="url(#rainFade)" font-family="'SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="17" letter-spacing="4" aria-hidden="true">
+      <text x="35" y="-10">01ア7ク10キ<tspan x="35" dy="25">9サ0ミ110</tspan><tspan x="35" dy="25">ツ01ナ6ホ</tspan><tspan x="35" dy="25">100メ3リ</tspan><tspan x="35" dy="25">カ8ロ01シ</tspan><tspan x="35" dy="25">0ヤ1ヌ5ワ</tspan><tspan x="35" dy="25">フ001ラ2</tspan><tspan x="35" dy="25">10ヨケ0ン</tspan></text>
+      <text x="178" y="255">7ホ10ナ0<tspan x="178" dy="25">01シ3ア</tspan><tspan x="178" dy="25">モ9ク100</tspan><tspan x="178" dy="25">11テ0ワ</tspan><tspan x="178" dy="25">4リ01カ</tspan><tspan x="178" dy="25">0サ8ヌ1</tspan><tspan x="178" dy="25">キ001ヨ</tspan></text>
+      <text x="324" y="-25">100カ6ロ<tspan x="324" dy="25">ナ01ミ2</tspan><tspan x="324" dy="25">9ア110ヨ</tspan><tspan x="324" dy="25">シ0フ3リ</tspan><tspan x="324" dy="25">01ク8ワ</tspan></text>
+      <text x="470" y="280">0ヌ1ラ7<tspan x="470" dy="25">テ100カ</tspan><tspan x="470" dy="25">01ヨ4ホ</tspan><tspan x="470" dy="25">キ8サ00</tspan><tspan x="470" dy="25">1リ0ア5</tspan><tspan x="470" dy="25">ワ110シ</tspan></text>
+      <text x="646" y="-40">4ア001メ<tspan x="646" dy="25">ロ9ワ10</tspan><tspan x="646" dy="25">01カ6キ</tspan><tspan x="646" dy="25">ヌ0サ11</tspan><tspan x="646" dy="25">3ヨリ00</tspan><tspan x="646" dy="25">ホ8シ01</tspan></text>
+      <text x="802" y="270">1シ0ク8<tspan x="802" dy="25">ナ01ロ4</tspan><tspan x="802" dy="25">110ヨア</tspan><tspan x="802" dy="25">6ホ0カ1</tspan><tspan x="802" dy="25">ワ3リ00</tspan><tspan x="802" dy="25">01サ9ヌ</tspan></text>
+      <text x="958" y="-15">01ヨ5キ<tspan x="958" dy="25">ア100ナ</tspan><tspan x="958" dy="25">7シ0ホ1</tspan><tspan x="958" dy="25">ロ01ワ8</tspan><tspan x="958" dy="25">サ4ヌ10</tspan></text>
+      <text x="1090" y="245">8カ01リ<tspan x="1090" dy="25">0ア6ク1</tspan><tspan x="1090" dy="25">ホ100シ</tspan><tspan x="1090" dy="25">01ナ9ヨ</tspan><tspan x="1090" dy="25">ワ3ロ00</tspan><tspan x="1090" dy="25">1サ0ヌ4</tspan></text>
+    </g>
+
+    <rect x="125" y="76" width="950" height="198" rx="8" fill="#030705" fill-opacity="0.93" stroke="#39ff14" stroke-opacity="0.18"/>
+    <path d="M125 112H1075" stroke="#39ff14" stroke-opacity="0.12"/>
+    <circle cx="151" cy="94" r="4" fill="#39ff14" opacity="0.65"/>
+    <circle cx="167" cy="94" r="4" fill="#39ff14" opacity="0.28"/>
+    <circle cx="183" cy="94" r="4" fill="#39ff14" opacity="0.16"/>
+
+    <g font-family="'SFMono-Regular',Consolas,'Liberation Mono',monospace">
+      <text class="mobile-detail" x="151" y="142" fill="#68ff4d" font-size="14" letter-spacing="2">visitor@github:~$ identify --user</text>
+      <text class="identity-name" x="600" y="199" fill="#f0fff0" font-size="52" font-weight="700" letter-spacing="5" text-anchor="middle">KHUSHAL DANGAR</text>
+      <text class="identity-role" x="600" y="233" fill="#75f963" font-size="21" letter-spacing="3" text-anchor="middle">CS &amp; AI STUDENT // PRODUCT BUILDER</text>
+
+      <g class="mobile-detail" transform="translate(844 91)">
+        <circle cx="0" cy="0" r="5" fill="#39ff14" filter="url(#softGlow)"/>
+        <text x="14" y="5" fill="#8cff79" font-size="12" letter-spacing="2">SYSTEM ONLINE</text>
+      </g>
+
+      <rect class="mobile-detail" x="938" y="217" width="10" height="19" rx="1" fill="#39ff14"/>
+      <text class="mobile-detail" x="151" y="257" fill="#338b2a" font-size="11" letter-spacing="2">NODE: KHUSHALX // CHANNEL: OPEN // BUILD: IN PROGRESS</text>
+    </g>
+  </g>
+
+  <rect x="1" y="1" width="1198" height="348" rx="12" fill="none" stroke="#39ff14" stroke-opacity="0.35" stroke-width="2"/>
+</svg>
