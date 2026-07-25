@@ -62,16 +62,6 @@ I’m especially interested in open-source collaboration and in creating project
 
 ![Groq Cloud](https://img.shields.io/badge/Groq_Cloud-0B120D?style=flat-square&logo=groq&logoColor=39FF14) ![AI integrations](https://img.shields.io/badge/AI_Integrations-0B120D?style=flat-square&logoColor=39FF14) ![Prompt engineering](https://img.shields.io/badge/Prompt_Engineering-0B120D?style=flat-square&logoColor=39FF14) ![Product development](https://img.shields.io/badge/Product_Development-0B120D?style=flat-square&logoColor=39FF14) ![Rapid prototyping](https://img.shields.io/badge/Rapid_Prototyping-0B120D?style=flat-square&logoColor=39FF14)
 
-## `> find ./projects -type featured`
-
-| Project | Description | Status | Repository |
-|:--|:--|:--|:--|
-| **CoreAlert** | Emergency SOS application focused on guardian alerts, emergency activation, live location sharing, and crisis-response reliability. | `In development` | Coming soon |
-| **Astroboat** | Astronomy discovery platform with astronomy briefs, space-event information, moon data, and other space-related tools. | `Live project` | Coming soon |
-| **LaunchLab** | Interactive startup simulation where users make product, pricing, team, and business decisions. | `Prototype` | Coming soon |
-| **The Trial of Common Sense** | AI-powered interactive courtroom experience where everyday topics are prosecuted and defended. | `Experimental project` | Coming soon |
-| **FilePilot** | Python command-line tool for safely organising, renaming and cleaning files with preview and undo functionality. | `CLI project` | Coming soon |
-
 ## `> ./github-stats --user khushalx`
 
 <p align="center">
