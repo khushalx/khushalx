@@ -27,8 +27,3 @@
 ---
 
 
-   Location: India
-   Collaboration: open
-```
-
-
