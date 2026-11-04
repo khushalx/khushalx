@@ -1,3 +1,4 @@
+
 <p align="center">
   <img src="./assets/red-galaxy-header.svg" alt="Khushal Dangar — CS and AI student and product builder, against a crimson spiral galaxy" width="100%">
 </p>
@@ -20,7 +21,6 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/khushalx"><img src="https://img.shields.io/badge/GITHUB-18060D?style=flat-square&amp;logo=github&amp;logoColor=FF4D6D" alt="GitHub profile"></a>
   <a href="mailto:khushaldangar29@gmail.com"><img src="https://img.shields.io/badge/EMAIL-18060D?style=flat-square&amp;logo=gmail&amp;logoColor=FF4D6D" alt="Email Khushal Dangar"></a>
 </p>
 
