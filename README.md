@@ -1,38 +1,34 @@
 
-<p align="center">
-  <img src="./assets/red-galaxy-header.svg" alt="Khushal Dangar — CS and AI student and product builder, against a crimson spiral galaxy" width="100%">
-</p>
+<div align="center">
 
-<p align="center">
-  <code>visitor@github:~$ whoami</code><br>
-  <strong>Khushal Dangar</strong><br>
-  CS &amp; AI Student<br>
-  Developer • Builder • Problem Solver
-  <br><br>
-  <code>visitor@github:~$ status</code><br>
-  Building ideas into working products.
-</p>
+  <img src="./assets/red-galaxy-header.svg" alt="Khushal Dangar — CS & AI Student and Product Builder" width="100%">
 
-<p align="center">
-  <picture>
-    <source media="(prefers-reduced-motion: reduce)" srcset="https://img.shields.io/badge/CS_%26_AI_Student-140509?style=flat-square&amp;labelColor=140509&amp;color=140509">
-    <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&amp;weight=500&amp;size=18&amp;pause=1100&amp;color=FF4D6D&amp;background=14050900&amp;center=true&amp;vCenter=true&amp;repeat=true&amp;width=520&amp;height=45&amp;lines=CS+%26+AI+Student;Building+products+from+ideas;Exploring+intelligent+systems;Learning+by+shipping;Open+to+collaborations" alt="Typing animation" width="520">
-  </picture>
-</p>
+  <br>
 
-<p align="center">
-  <a href="mailto:khushaldangar29@gmail.com">
-    <img src="https://img.shields.io/badge/EMAIL-18060D?style=flat-square&amp;logo=gmail&amp;logoColor=FF4D6D" alt="Email">
-  </a>
+  <p>
+    <strong>Software Development&nbsp; • &nbsp;AI/ML&nbsp; • &nbsp;Open Source</strong>
+  </p>
+
+  <p>
+    Exploring ideas, contributing to open source, and building things that work.
+  </p>
+
+  <br>
+
   <a href="https://www.linkedin.com/in/khushaldangar">
-    <img src="https://img.shields.io/badge/LINKEDIN-18060D?style=flat-square&amp;logo=linkedin&amp;logoColor=FF4D6D" alt="LinkedIn">
+    <img src="https://img.shields.io/badge/LinkedIn-210A12?style=for-the-badge&amp;logo=linkedin&amp;logoColor=FF4D6D" alt="LinkedIn" height="30">
   </a>
+  &nbsp;
   <a href="https://x.com/DangarKhushal">
-    <img src="https://img.shields.io/badge/X-18060D?style=flat-square&amp;logo=x&amp;logoColor=FF4D6D" alt="X">
+    <img src="https://img.shields.io/badge/Twitter%20(X)-210A12?style=for-the-badge&amp;logo=x&amp;logoColor=FF4D6D" alt="X" height="30">
   </a>
+  &nbsp;
   <a href="https://khushaldangar.vercel.app/">
-    <img src="https://img.shields.io/badge/PORTFOLIO-18060D?style=flat-square&amp;logo=googlechrome&amp;logoColor=FF4D6D" alt="Portfolio">
+    <img src="https://img.shields.io/badge/Portfolio-210A12?style=for-the-badge&amp;logo=googlechrome&amp;logoColor=FF4D6D" alt="Portfolio" height="30">
   </a>
-</p>
+  &nbsp;
+  <a href="mailto:khushaldangar29@gmail.com">
+    <img src="https://img.shields.io/badge/Email-210A12?style=for-the-badge&amp;logo=gmail&amp;logoColor=FF4D6D" alt="Email" height="30">
+  </a>
 
----
+</div>
