@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="28" viewBox="0 0 560 28">
+  <defs>
+    <linearGradient id="trace" gradientUnits="userSpaceOnUse" x1="0" x2="560">
+      <stop stop-color="#B52143" stop-opacity="0"/>
+      <stop offset=".28" stop-color="#C73454" stop-opacity=".53"/>
+      <stop offset=".5" stop-color="#E13A5C" stop-opacity=".87"/>
+      <stop offset=".72" stop-color="#C73454" stop-opacity=".53"/>
+      <stop offset="1" stop-color="#B52143" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <path d="M0 14h259m42 0h259" stroke="url(#trace)" fill="none"/>
+  <ellipse cx="280" cy="14" rx="18" ry="6.5" transform="rotate(-19 280 14)" fill="none" stroke="#D74262" stroke-opacity=".69"/>
+  <circle cx="280" cy="14" r="4" fill="#DF3558"/>
+  <circle cx="296" cy="8" r="1.7" fill="#F17089"/>
+</svg>
