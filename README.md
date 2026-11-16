@@ -2,15 +2,11 @@
   <source media="(prefers-reduced-motion: reduce) and (max-width: 900px)" srcset="./assets/crimson-cosmos-mobile.svg#still">
   <source media="(prefers-reduced-motion: reduce)" srcset="./assets/crimson-cosmos.svg#still">
   <source media="(max-width: 900px)" srcset="./assets/crimson-cosmos-mobile.svg">
-  <img src="./assets/crimson-cosmos.svg" width="100%" alt="Khushal Dangar — Computer Science &amp; Artificial Intelligence. Exploring complexity. Engineering possibilities.">
+  <img src="./assets/crimson-cosmos.svg" width="100%" alt="Khushal Dangar — Computer Science &amp; Artificial Intelligence, beside a crimson black hole.">
 </picture>
 
 <p align="center">
   I’m a Computer Science &amp; AI student exploring software engineering, machine learning, cybersecurity, and open source. I enjoy building things, experimenting with ideas, and figuring out how systems work.
-</p>
-
-<p align="center">
-  <img src="./assets/cosmos-divider.svg" width="480" alt="">
 </p>
 
 <p align="center">

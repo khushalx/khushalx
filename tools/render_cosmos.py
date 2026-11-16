@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build both Crimson Cosmos covers and the divider from local inputs."""
+"""Build both Crimson Cosmos covers from local inputs."""
 
 import base64
 import io
@@ -143,11 +143,11 @@ def artwork():
     roll = np.deg2rad(13)
     x, y = dx * np.cos(roll) + dy * np.sin(roll), dy * np.cos(roll) - dx * np.sin(roll)
     b, disk, heat = disk_light(x, y)
-    ring = np.exp(-((b - 5.208) / .033) ** 2) * .16 * (1 + .73 * np.cos(np.arctan2(y, x) + 2.5))
+    ring = np.exp(-((b - 5.208) / .042) ** 2) * .24 * (1 + .81 * np.cos(np.arctan2(y, x) + 2.5))
     ring *= .6 + .5 * noise(x * 3, y * 3)
     disk += ring
-    small, mid, far = blur(disk, 2.3), blur(disk, 12), blur(disk, 38)
-    core = 1 - np.exp(-1.45 * disk)
+    small, mid, far = blur(disk, 2.3), blur(disk, 15), blur(disk, 53)
+    core = 1 - np.exp(-1.64 * disk)
     warmth = np.clip((1 - np.exp(-1.25 * heat)) * 1.4, 0, 1)
 
     # Faint, warped clouds well behind the accretion disk. Mask the event
@@ -155,14 +155,20 @@ def artwork():
     warp = turbulence(xx / 150 + 12, yy / 106 - 85, 4)
     sky = turbulence(xx / 211 + warp * 2.7, yy / 94 - warp * 3.4, 6)
     veil = turbulence(x * .32 + warp * 2 + 98, y * .68 - warp * 2, 5)
-    plume = np.exp(-((y - .11 * x - 2.0 * np.cos(x * .14)) / (4.3 + .08 * np.abs(x))) ** 2)
+    plume = np.exp(-((y - .11 * x - 2.0 * np.cos(x * .14)) / (5.5 + .13 * np.abs(x))) ** 2)
     nebula = (sky ** 2.7 * .6 + np.maximum(veil - .20, 0) ** 1.45) * plume
     nebula *= np.exp(-((x + 3) / 24) ** 2) * smooth(5.18, 5.46, b)
     clouds = (warp ** 4) * np.exp(-((dx - 6) / 19) ** 2 - ((dy + 1) / 11) ** 2) * smooth(5.18, 5.46, b)
 
-    red = 5 + core * 207 + small * 56 + mid * 87 + far * 94 + nebula * 72 + clouds * 18
-    green = 5 + core * (14 + warmth * 78) + small * 5 + mid * 8 + far * 8 + nebula * 5 + clouds * 6
-    blue = 7 + core * (19 + warmth * 43) + small * 5 + mid * 9 + far * 10 + nebula * 9 + clouds * 12
+    # Stretch the wisps into the disk's shear direction. Cloud contrast is
+    # masked against the shadow; bloom can cross it as lens scatter.
+    strands = turbulence(x * .23 + warp * 4, y * .95 + warp * 1.5, 6)
+    wisps = np.maximum(strands - .21, 0) ** 1.42 * plume
+    wisps *= np.exp(-((x + 1.5) / 18) ** 2) * smooth(5.14, 6.1, b)
+    halo = (1 - np.exp(-far * 4.8)) * .78
+    red = 5 + core * 206 + small * 57 + mid * 112 + halo * 130 + nebula * 103 + wisps * 160 + clouds * 20
+    green = 5 + core * (8 + warmth * 74) + small * 5 + mid * 9 + halo * 9 + nebula * 4 + wisps * 7
+    blue = 7 + core * (11 + warmth * 37) + small * 5 + mid * 10 + halo * 14 + nebula * 12 + wisps * 16
     scatter = np.dstack((red, green, blue))
 
     rng = np.random.default_rng(79163)
@@ -184,19 +190,17 @@ def artwork():
 
 @lru_cache(maxsize=None)
 def font(weight):
-    face = TTFont(ROOT / 'tools/fonts/Manrope.ttf')
+    face = TTFont(ROOT / 'tools/fonts/SpaceGrotesk.ttf')
     return instantiateVariableFont(face, {'wght': weight}, inplace=True)
 
 
-def lettering(label, x, baseline, size, color, weight=650, tracking=0, align='left'):
-    """Outline Manrope glyphs; no browser font load or machine-specific metrics."""
+def lettering(label, x, baseline, size, color, weight=650, tracking=0):
+    """Outline Space Grotesk glyphs so the artwork needs no browser font load."""
     face = font(weight)
     glyphs, cmap = face.getGlyphSet(), face.getBestCmap()
     scale = size / face['head'].unitsPerEm
     names = [cmap[ord(c)] for c in label]
     advances = [glyphs[name].width * scale + tracking for name in names]
-    if align == 'right':
-        x -= sum(advances) - tracking
     parts = []
     for name, advance in zip(names, advances):
         pen = SVGPathPen(glyphs, ntos=lambda n: f'{n:.2f}'.rstrip('0').rstrip('.'))
@@ -225,153 +229,113 @@ def picture_payload(img, layout):
 
 MOTION = '''<style>
 @media (prefers-reduced-motion: no-preference) {
-  .drift { animation: drift 32s ease-in-out infinite; }
-  .beacon { animation: breathe 7s ease-in-out infinite; }
-  .twinkle { animation: breathe 9s ease-in-out -4s infinite; }
-  .tracer { animation: trace 30s linear infinite; }
-  .tracer-b { animation: trace 43s linear -17s infinite reverse; }
-  .orbit { animation: precess 48s ease-in-out infinite; }
+  .drift { animation: drift 21s ease-in-out infinite; }
+  .flare { animation: flare 11s ease-in-out infinite; }
+  .rotor { animation: spin 25s linear infinite; }
+  .rotor.slow { animation: spin 38s linear -13s infinite; }
 }
-@keyframes breathe { 0%,100% {opacity:.42} 50% {opacity:.87} }
-@keyframes drift { 0%,100% {transform:translate(0,0)} 50% {transform:translate(10px,-4px)} }
-@keyframes trace { to {stroke-dashoffset:-100} }
-@keyframes precess { 0%,100% {transform:rotate(0)} 50% {transform:rotate(1.3deg)} }
-:root:target .drift, :root:target .beacon, :root:target .twinkle,
-:root:target .tracer, :root:target .tracer-b, :root:target .orbit { animation:none; }
+@keyframes flare { 0%,100% {opacity:.34} 50% {opacity:.79} }
+@keyframes drift { 0%,100% {transform:translate(0,0)} 50% {transform:translate(19px,-7px)} }
+@keyframes spin { to {transform:rotate(360deg)} }
+:root:target .drift, :root:target .flare, :root:target .rotor { animation:none; }
 </style>'''
 
 
 def sky_marks(layout):
-    w, h = layout['size']
     ix, iy, scale = layout['image']
     cx, cy = ix + 686 * scale, iy + 478 * scale
     rad = 32 * scale
     rng = np.random.default_rng(12229)
     dust = []
-    for _ in range(88):
-        x = rng.uniform(-rad * 15, rad * 15)
-        y = rng.normal(0, rad * 1.24)
-        if ((x / rad) ** 2 + (y / rad) ** 2) < 30 or cx + x < layout['stars_start']:
+    for _ in range(135):
+        x = rng.uniform(-rad * 17, rad * 17)
+        y = rng.normal(rad * .12, rad * 2.25)
+        if x * x + y * y < (rad * 6.3) ** 2:
             continue
-        dust.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{rng.uniform(.35, 1.15):.2f}" '
-                    f'fill="{rng.choice(["#F5F1EF", "#FF7761", "#DC143C"])}" opacity="{rng.uniform(.18, .53):.2f}"/>')
-    paths = []
-    for sx, sy, tilt in ((19, 5.1, 1), (16.1, 6.7, -.8)):
-        paths.append(f'<ellipse rx="{rad * sx:.2f}" ry="{rad * sy:.2f}" transform="rotate({tilt})"/>')
-    tracer = f'<ellipse rx="{rad * 10.5:.2f}" ry="{rad * 1.85:.2f}" pathLength="100"'
-    stars = []
-    for index, (x, y, bright) in enumerate(layout['stars']):
-        arms = 6 if bright else 3
-        stars.append(f'<g class="{"beacon" if index == 0 else "twinkle"}" opacity=".66" transform="translate({x} {y})">'
-                     f'<path d="M{-arms} 0H{arms}M0 {-arms}V{arms}" stroke="#F58A73" stroke-width=".75"/>'
-                     f'<circle r="{1.55 if bright else .75}" fill="#F5F1EF"/></g>')
-    return (f'<g clip-path="url(#art-safe)">'
-            f'<g transform="translate({cx:.2f} {cy:.2f}) rotate(-13)">'
-            f'<g class="orbit" fill="none" stroke="#D99389" stroke-width=".75" opacity=".24">{"".join(paths)}</g>'
-            f'<g class="drift">{"".join(dust)}</g>'
-            f'<g fill="none" stroke-linecap="round">{tracer} class="tracer" stroke="#FF9B78" '
-            f'stroke-width="1.25" stroke-dasharray=".12 31 .05 68.83" opacity=".48"/>'
-            f'{tracer} class="tracer-b" stroke="#FF5039" stroke-width="1.5" '
-            f'stroke-dasharray=".15 47 .06 52.79" opacity=".39"/></g>'
-            f'</g>{"".join(stars)}</g>')
+        tint = rng.choice(['#FFC3A6', '#FF6E4E', '#FF2637', '#C00A25'])
+        dust.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{rng.uniform(.44, 1.70):.2f}" '
+                    f'fill="{tint}" opacity="{rng.uniform(.25, .73):.2f}"/>')
+
+    def rotor(slow, count, lo, hi):
+        sparks = []
+        for _ in range(count):
+            angle = rng.uniform(0, np.pi * 2)
+            distance = rng.uniform(lo, hi) * rad
+            x, y = distance * np.cos(angle), distance * np.sin(angle)
+            size = rng.uniform(.65, 1.65)
+            tint = rng.choice(['#FF543E', '#FF7760', '#FFC5A2'])
+            sparks.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{size:.2f}" fill="{tint}" '
+                          f'opacity="{rng.uniform(.22, .61):.2f}"/>')
+        return f'<g class="rotor{slow}">{"".join(sparks)}</g>'
+
+    # Flatten the moving particles into the disk's plane and hide the
+    # far-side particles where the black hole's shadow occludes them.
+    shadow = rad * 5.15
+    return (f'<g transform="translate({cx:.2f} {cy:.2f}) rotate(-13)">'
+            f'<defs><mask id="occult" maskUnits="userSpaceOnUse" x="{-21*rad}" y="{-21*rad}" '
+            f'width="{42*rad}" height="{42*rad}">'
+            f'<rect x="{-21*rad}" y="{-21*rad}" width="{42*rad}" height="{42*rad}" fill="white"/>'
+            f'<path d="M{-shadow:.2f} 0A{shadow:.2f} {shadow:.2f} 0 1 1 {shadow:.2f} 0Z" fill="black"/>'
+            f'</mask></defs>'
+            f'<ellipse class="flare" cx="{-6.3*rad:.1f}" cy="{1.2*rad:.1f}" rx="{6*rad:.1f}" '
+            f'ry="{3.3*rad:.1f}" fill="url(#flare-glow)" opacity=".42"/>'
+            f'<g mask="url(#occult)"><g class="drift">{"".join(dust)}</g>'
+            f'<g transform="translate(0 {1.1*rad:.2f}) scale(1 .19)">'
+            f'{rotor("", 52, 5.8, 12)}{rotor(" slow", 44, 10, 17)}</g></g></g>')
 
 
 def typography(layout):
-    w, h = layout['size']
     mobile = layout['mobile']
-    x = 39 if mobile else 66
-    rx = w - x
-    guide = 78 if mobile else 79
-    bottom = h - (51 if mobile else 52)
-    name_size = 110 if mobile else 122
-    name_y = (187, 278) if mobile else (233, 337)
-    subtitle = ([lettering('COMPUTER SCIENCE &', x, 323, 24, '#F5F1EF', 760, 1.1),
-                 lettering('ARTIFICIAL INTELLIGENCE', x, 352, 24, '#F5F1EF', 760, 1.1)] if mobile else
-                [lettering('COMPUTER SCIENCE & ARTIFICIAL INTELLIGENCE', x, 391, 17, '#F5F1EF', 760, 1.45)])
-    deck_y = 390 if mobile else 425
-    footer_y = h - 24
-    warm, grey = '#F5F1EF', '#A6A2A3'
-    # Manrope outlines, exception: purely decorative plotted ticks below.
-    pieces = [
-        lettering('CRIMSON COSMOS', x + 25, 52, 15, warm, 760, 3.1),
-        lettering('FIELD NOTES  /  01', rx, 52, 13, grey, 660, 1.7, 'right'),
-        lettering('KHUSHAL', x - 5, name_y[0], name_size, warm, 790, -4.2),
-        lettering('DANGAR', x - 3, name_y[1], name_size, warm, 790, -4.2),
-        *subtitle,
-        lettering('Exploring complexity. Engineering possibilities.', x, deck_y, 23 if mobile else 20, '#BEB9B9', 530),
-        lettering('FIG. 01   /   EVENT HORIZON', x, footer_y, 13 if mobile else 12, grey, 700, 1.4),
-        lettering('GRAVITATIONAL LENSING', rx, footer_y, 12 if mobile else 11.5, grey, 650, 1.5, 'right'),
-    ]
-    ruler = []
-    for index in range(11):
-        tick = w - x - index * (9 if mobile else 13)
-        ruler.append(f'M{tick} {bottom}v{-7 if index % 5 == 0 else -3.8}')
-    markers = (f'<path d="M{x} {guide}H{rx}M{x} {bottom}H{rx}{"".join(ruler)}" '
-               f'fill="none" stroke="#C4A7A5" stroke-opacity=".37" stroke-width="1"/>'
-               f'<path d="M{x} {guide}h45" stroke="#FF303F" stroke-width="1.5"/>'
-               f'<path d="M{x} 46l5 -5 5 5-5 5z" fill="none" stroke="#FF4C52" stroke-width="1.2"/>'
-               f'<circle cx="{x + 5}" cy="46" r="1.15" fill="#F5F1EF"/>')
-    if not mobile:
-        markers += ('<path d="M1214 112v76m0-76h-11m11 19h-5m5 19h-5m5 19h-5m5 19h-11" '
-                    'fill="none" stroke="#BF9188" stroke-width=".8" opacity=".62"/>'
-                    '<path d="M1167 437h20l20-22" fill="none" stroke="#BF9188" stroke-width=".8" opacity=".64"/>')
-        pieces.extend([lettering('+15°', 1195, 119, 11, grey, 650, 1.3, 'right'),
-                       lettering('−15°', 1195, 189, 11, grey, 650, 1.3, 'right')])
-    return markers + ''.join(pieces)
+    x = 43 if mobile else 73
+    name_size = 131 if mobile else 145
+    name_y = (147, 248) if mobile else (217, 328)
+    subject = '#F1D6D2'
+    names = (
+        lettering('Khushal', x - 4, name_y[0], name_size, '#F8F1EE', 650, -4.1),
+        lettering('Dangar', x - 4, name_y[1], name_size, '#F2DFDA', 650, -4.1),
+    )
+    subtitle = (
+        lettering('Computer Science &', x, 315, 30, subject, 550),
+        lettering('Artificial Intelligence', x, 350, 30, subject, 550),
+    ) if mobile else (
+        lettering('Computer Science & Artificial Intelligence', x, 411, 25, subject, 550),
+    )
+    return ''.join((*names, *subtitle))
 
 
 def cover(img, layout):
     w, h = layout['size']
     mobile = layout['mobile']
     axis = 'x2="0" y2="1"' if mobile else ''
-    stops = ((0, 1), (.40, 1), (.51, .65), (.66, 0), (1, 0)) if mobile else (
-        (0, 1), (.29, .98), (.46, .77), (.59, 0), (1, 0))
+    stops = ((0, 1), (.20, 1), (.31, .89), (.46, .69), (.65, 0), (1, 0)) if mobile else (
+        (0, 1), (.27, 1), (.43, .64), (.68, 0), (1, 0))
     fade = ''.join(f'<stop offset="{p}" stop-color="#050507" stop-opacity="{a}"/>' for p, a in stops)
-    safe = f'x="0" y="402" width="{w}" height="{h-402}"' if mobile else f'x="530" y="81" width="{w-530}" height="{h-130}"'
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" id="still" role="img" aria-labelledby="title desc">
 <!-- Generated by tools/render_cosmos.py -->
 <title id="title">Khushal Dangar — Crimson Cosmos</title>
-<desc id="desc">Computer Science &amp; Artificial Intelligence. Exploring complexity. Engineering possibilities. A luminous crimson accretion disk bends around a dark black hole.</desc>
+<desc id="desc">Computer Science &amp; Artificial Intelligence. Crimson light and glowing dust swirl around a black hole.</desc>
 {MOTION}
 <defs>
-  <clipPath id="art-safe"><rect {safe}/></clipPath>
   <linearGradient id="type-shade" {axis}>{fade}</linearGradient>
-  <linearGradient id="frame-shade" x2="0" y2="1"><stop stop-color="#050507"/><stop offset=".18" stop-color="#050507" stop-opacity="0"/><stop offset=".79" stop-color="#050507" stop-opacity="0"/><stop offset="1" stop-color="#050507"/></linearGradient>
+  <radialGradient id="flare-glow"><stop stop-color="#FF3222" stop-opacity=".62"/><stop offset=".42" stop-color="#D20C22" stop-opacity=".25"/><stop offset="1" stop-color="#9F061A" stop-opacity="0"/></radialGradient>
+  <radialGradient id="crimson-sky" cx="65%" cy="76%" r="72%"><stop stop-color="#730B1D" stop-opacity=".72"/><stop offset=".55" stop-color="#460814" stop-opacity=".38"/><stop offset="1" stop-color="#22050B" stop-opacity="0"/></radialGradient>
 </defs>
 <rect width="{w}" height="{h}" fill="#050507"/>
 {picture_payload(img, layout)}
 {sky_marks(layout)}
 <rect width="{w}" height="{h}" fill="url(#type-shade)"/>
-<rect width="{w}" height="{h}" fill="url(#frame-shade)"/>
+<rect width="{w}" height="{h}" fill="url(#crimson-sky)" opacity=".31"/>
 {typography(layout)}
-</svg>
-'''
-
-
-DIVIDER = '''<svg xmlns="http://www.w3.org/2000/svg" width="480" height="28" viewBox="0 0 480 28">
-<defs>
-  <linearGradient id="rule" gradientUnits="userSpaceOnUse" x1="0" x2="480"><stop stop-color="#929299" stop-opacity="0"/><stop offset=".25" stop-color="#929299" stop-opacity=".52"/><stop offset=".5" stop-color="#929299" stop-opacity=".72"/><stop offset=".75" stop-color="#929299" stop-opacity=".52"/><stop offset="1" stop-color="#929299" stop-opacity="0"/></linearGradient>
-</defs>
-<path d="M1 14h202m74 0h202" stroke="url(#rule)" fill="none"/>
-<g transform="translate(240 14) rotate(-14)" fill="none">
-  <ellipse rx="31" ry="6.5" stroke="#929299" stroke-opacity=".72"/>
-  <path d="M-31 0c0 4 14 6.5 31 6.5S31 4 31 0" stroke="#DC143C" stroke-opacity=".82"/>
-  <circle r="4" fill="#790019" stroke="#DC143C"/>
-  <circle cx="22" cy="4.6" r="1.5" fill="#DC143C"/>
-</g>
 </svg>
 '''
 
 
 def main():
     img = artwork()
-    desktop = dict(size=(1280, 534), image=(468, -164, .90), mobile=False,
-                   stars_start=585, stars=((1178, 135, True), (760, 163, False), (1155, 409, False), (1012, 108, False)))
-    mobile = dict(size=(620, 785), image=(-129, 263, .69), mobile=True,
-                  stars_start=0, stars=((520, 454, True), (123, 513, False), (546, 649, False), (186, 668, False)))
+    desktop = dict(size=(1280, 526), image=(340, -229, 1.06), mobile=False)
+    mobile = dict(size=(620, 730), image=(-184, 141, .80), mobile=True)
     for suffix, layout in (('', desktop), ('-mobile', mobile)):
         (ASSETS / f'crimson-cosmos{suffix}.svg').write_text(cover(img, layout), encoding='utf-8')
-    (ASSETS / 'cosmos-divider.svg').write_text(DIVIDER, encoding='utf-8')
 
 
 if __name__ == '__main__':
