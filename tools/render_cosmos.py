@@ -14,6 +14,16 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / 'assets'
+# Tonal landmarks sampled from the profile picture and tuned for emission.
+AVATAR_RAMP = (
+    (5,   (5, 5, 7)),
+    (27,  (26, 3, 10)),
+    (78,  (83, 10, 26)),
+    (141, (144, 22, 46)),
+    (185, (190, 40, 67)),
+    (218, (224, 61, 98)),
+    (255, (245, 110, 144)),
+)
 
 
 def smooth(lo, hi, value):
@@ -166,10 +176,12 @@ def artwork():
     wisps = np.maximum(strands - .21, 0) ** 1.42 * plume
     wisps *= np.exp(-((x + 1.5) / 18) ** 2) * smooth(5.14, 6.1, b)
     halo = (1 - np.exp(-far * 4.8)) * .78
-    red = 5 + core * 206 + small * 57 + mid * 112 + halo * 130 + nebula * 103 + wisps * 160 + clouds * 20
-    green = 5 + core * (8 + warmth * 74) + small * 5 + mid * 9 + halo * 9 + nebula * 4 + wisps * 7
-    blue = 7 + core * (11 + warmth * 37) + small * 5 + mid * 10 + halo * 14 + nebula * 12 + wisps * 16
-    scatter = np.dstack((red, green, blue))
+    exposure = 5 + core * (183 + warmth * 26) + small * 56 + mid * 104 + halo * 115
+    exposure += nebula * 103 + wisps * 160 + clouds * 20
+    # Roll off the hottest plasma so it still shows detail near white.
+    exposed = np.minimum(exposure, 188) - 67 * np.expm1(-np.maximum(exposure - 188, 0) / 84)
+    levels, colors = zip(*AVATAR_RAMP)
+    scatter = np.stack([np.interp(exposed, levels, channel) for channel in zip(*colors)], axis=-1)
 
     rng = np.random.default_rng(79163)
     # Unresolved stars and dust give the exposure fine detail. Keep the
@@ -179,7 +191,7 @@ def artwork():
             continue
         strength = rng.random() ** 5
         value = (6 + 147 * strength) * (1 - .55 * core[iy, ix])
-        shade = np.array((1, .65, .56) if rng.random() < .53 else (.86, .88, 1)) * value
+        shade = np.array((1, .63, .75) if rng.random() < .53 else (.86, .88, 1)) * value
         for sy in range(-2, 3):
             for sx in range(-2, 3):
                 scatter[iy + sy, ix + sx] += shade * np.exp(-(sx * sx + sy * sy) / (.40 + strength))
@@ -230,14 +242,28 @@ def picture_payload(img, layout):
 MOTION = '''<style>
 @media (prefers-reduced-motion: no-preference) {
   .drift { animation: drift 21s ease-in-out infinite; }
-  .flare { animation: flare 11s ease-in-out infinite; }
-  .rotor { animation: spin 25s linear infinite; }
-  .rotor.slow { animation: spin 38s linear -13s infinite; }
+  .flare { animation: flare 13s ease-in-out infinite; }
+  .rotor { animation: spin 22s linear infinite; }
+  .rotor.slow { animation: spin 34s linear -13s infinite; }
+  .shear { animation: sweep 16s linear infinite; }
+  .shear.late { animation-delay: -8s; }
+  .beacons { animation: twinkle 6.8s ease-in-out infinite; }
+  .beacons.late { animation-duration: 9.2s; animation-delay: -3.5s; }
 }
-@keyframes flare { 0%,100% {opacity:.34} 50% {opacity:.79} }
+@keyframes flare { 0%,100% {opacity:.39} 50% {opacity:.68} }
 @keyframes drift { 0%,100% {transform:translate(0,0)} 50% {transform:translate(19px,-7px)} }
 @keyframes spin { to {transform:rotate(360deg)} }
-:root:target .drift, :root:target .flare, :root:target .rotor { animation:none; }
+@keyframes sweep {
+  0% {transform:rotate(4deg); opacity:0}
+  15% {opacity:0}
+  39% {opacity:.78}
+  68% {opacity:.48}
+  90%,100% {opacity:0}
+  100% {transform:rotate(118deg)}
+}
+@keyframes twinkle { 0%,100% {opacity:.26} 54% {opacity:.88} }
+:root:target .drift, :root:target .flare, :root:target .rotor,
+:root:target .shear, :root:target .beacons { animation:none; }
 </style>'''
 
 
@@ -252,7 +278,7 @@ def sky_marks(layout):
         y = rng.normal(rad * .12, rad * 2.25)
         if x * x + y * y < (rad * 6.3) ** 2:
             continue
-        tint = rng.choice(['#FFC3A6', '#FF6E4E', '#FF2637', '#C00A25'])
+        tint = rng.choice(['#FFC3D2', '#F17E9A', '#DF4569', '#A82B4A'])
         dust.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{rng.uniform(.44, 1.70):.2f}" '
                     f'fill="{tint}" opacity="{rng.uniform(.25, .73):.2f}"/>')
 
@@ -263,10 +289,26 @@ def sky_marks(layout):
             distance = rng.uniform(lo, hi) * rad
             x, y = distance * np.cos(angle), distance * np.sin(angle)
             size = rng.uniform(.65, 1.65)
-            tint = rng.choice(['#FF543E', '#FF7760', '#FFC5A2'])
+            tint = rng.choice(['#DF5274', '#F7839D', '#FFC3D2'])
             sparks.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{size:.2f}" fill="{tint}" '
                           f'opacity="{rng.uniform(.22, .61):.2f}"/>')
         return f'<g class="rotor{slow}">{"".join(sparks)}</g>'
+
+    beacons = []
+    for parity in range(2):
+        lights = []
+        for x, y, radius in layout['beacons'][parity::2]:
+            lights.append(f'<circle cx="{x}" cy="{y}" r="{radius*3:.1f}" fill="url(#spark-glow)"/>'
+                          f'<circle cx="{x}" cy="{y}" r="{radius}" fill="#FFC3D2"/>')
+        late = ' late' if parity else ''
+        beacons.append(f'<g class="beacons{late}" opacity=".42">{"".join(lights)}</g>')
+
+    # The soft knots move along the lensed arc; orbital sparks stay in the disk.
+    arc = (f'<g transform="scale(1 1.13)">'
+           f'<g class="shear" opacity="0"><ellipse cx="{-7.35*rad:.2f}" rx="{1.15*rad:.2f}" '
+           f'ry="{1.88*rad:.2f}" fill="url(#shear-glow)"/></g>'
+           f'<g class="shear late" opacity="0"><ellipse cx="{-8.0*rad:.2f}" rx="{.92*rad:.2f}" '
+           f'ry="{1.5*rad:.2f}" fill="url(#shear-glow)"/></g></g>')
 
     # Flatten the moving particles into the disk's plane and hide the
     # far-side particles where the black hole's shadow occludes them.
@@ -279,9 +321,10 @@ def sky_marks(layout):
             f'</mask></defs>'
             f'<ellipse class="flare" cx="{-6.3*rad:.1f}" cy="{1.2*rad:.1f}" rx="{6*rad:.1f}" '
             f'ry="{3.3*rad:.1f}" fill="url(#flare-glow)" opacity=".42"/>'
+            f'{arc}'
             f'<g mask="url(#occult)"><g class="drift">{"".join(dust)}</g>'
             f'<g transform="translate(0 {1.1*rad:.2f}) scale(1 .19)">'
-            f'{rotor("", 52, 5.8, 12)}{rotor(" slow", 44, 10, 17)}</g></g></g>')
+            f'{rotor("", 52, 5.8, 12)}{rotor(" slow", 44, 10, 17)}</g></g></g>{"".join(beacons)}')
 
 
 def typography(layout):
@@ -317,8 +360,10 @@ def cover(img, layout):
 {MOTION}
 <defs>
   <linearGradient id="type-shade" {axis}>{fade}</linearGradient>
-  <radialGradient id="flare-glow"><stop stop-color="#FF3222" stop-opacity=".62"/><stop offset=".42" stop-color="#D20C22" stop-opacity=".25"/><stop offset="1" stop-color="#9F061A" stop-opacity="0"/></radialGradient>
-  <radialGradient id="crimson-sky" cx="65%" cy="76%" r="72%"><stop stop-color="#730B1D" stop-opacity=".72"/><stop offset=".55" stop-color="#460814" stop-opacity=".38"/><stop offset="1" stop-color="#22050B" stop-opacity="0"/></radialGradient>
+  <radialGradient id="flare-glow"><stop stop-color="#E75177" stop-opacity=".47"/><stop offset=".42" stop-color="#BA2853" stop-opacity=".21"/><stop offset="1" stop-color="#951435" stop-opacity="0"/></radialGradient>
+  <radialGradient id="shear-glow"><stop stop-color="#F38CA8" stop-opacity=".54"/><stop offset=".46" stop-color="#ED698C" stop-opacity=".20"/><stop offset="1" stop-color="#DC527B" stop-opacity="0"/></radialGradient>
+  <radialGradient id="spark-glow"><stop stop-color="#F987A3" stop-opacity=".55"/><stop offset="1" stop-color="#F987A3" stop-opacity="0"/></radialGradient>
+  <radialGradient id="crimson-sky" cx="65%" cy="76%" r="72%"><stop stop-color="#640E25" stop-opacity=".59"/><stop offset=".55" stop-color="#410816" stop-opacity=".35"/><stop offset="1" stop-color="#22050B" stop-opacity="0"/></radialGradient>
 </defs>
 <rect width="{w}" height="{h}" fill="#050507"/>
 {picture_payload(img, layout)}
@@ -332,8 +377,10 @@ def cover(img, layout):
 
 def main():
     img = artwork()
-    desktop = dict(size=(1280, 526), image=(340, -229, 1.06), mobile=False)
-    mobile = dict(size=(620, 730), image=(-184, 141, .80), mobile=True)
+    desktop = dict(size=(1280, 526), image=(340, -229, 1.06), mobile=False,
+                   beacons=((756, 129, 1.5), (661, 79, 1.25), (1210, 480, 1.4), (865, 425, 1.25)))
+    mobile = dict(size=(620, 730), image=(-184, 141, .80), mobile=True,
+                  beacons=((523, 400, 1.5), (216, 407, 1.25), (82, 592, 1.35), (536, 654, 1.45)))
     for suffix, layout in (('', desktop), ('-mobile', mobile)):
         (ASSETS / f'crimson-cosmos{suffix}.svg').write_text(cover(img, layout), encoding='utf-8')
 
