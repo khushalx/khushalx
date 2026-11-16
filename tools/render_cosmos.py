@@ -346,6 +346,42 @@ def typography(layout):
     return ''.join((*names, *subtitle))
 
 
+def name_stars(mobile):
+    """Scatter visible stars in the negative space around the lettering."""
+    if mobile:
+        width, height, count = 596, 410, 48
+        clear = ((33, 44, 523, 269), (32, 286, 358, 358))
+        accents = ((111, 26, 1.8), (345, 23, 1.65), (564, 62, 2.15),
+                   (552, 216, 1.70), (486, 294, 1.75), (74, 385, 1.6))
+    else:
+        width, height, count = 736, 505, 75
+        clear = ((57, 101, 611, 357), (58, 380, 610, 423))
+        accents = ((88, 63, 1.85), (272, 31, 1.62), (468, 75, 2.15),
+                   (663, 114, 1.8), (40, 254, 1.8), (631, 337, 2.0), (162, 457, 1.75))
+
+    rng = np.random.default_rng(31015 if mobile else 49943)
+    points = [(x, y) for x, y, _ in accents]
+    stars = []
+    while len(stars) < count:
+        x, y = rng.uniform(17, width), rng.uniform(16, height)
+        if (any(l <= x <= r and t <= y <= b for l, t, r, b in clear)
+                or any((x - px) ** 2 + (y - py) ** 2 < 12 ** 2 for px, py in points)):
+            continue
+        points.append((x, y))
+        strength = rng.random() ** 1.7
+        tint = rng.choice(['#F8E6E9', '#CE9CA9', '#DC6884'])
+        stars.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{.65 + .93*strength:.2f}" '
+                     f'fill="{tint}" opacity="{.23 + .41*strength:.2f}"/>')
+
+    for parity, phase in enumerate(('', ' late')):
+        lights = []
+        for x, y, radius in accents[parity::2]:
+            lights.append(f'<circle cx="{x}" cy="{y}" r="{radius*2.6:.2f}" fill="url(#spark-glow)"/>'
+                          f'<circle cx="{x}" cy="{y}" r="{radius}" fill="#FFE0E8"/>')
+        stars.append(f'<g class="beacons{phase}" opacity=".59">{"".join(lights)}</g>')
+    return '<g id="name-stars">' + ''.join(stars) + '</g>'
+
+
 def cover(img, layout):
     w, h = layout['size']
     mobile = layout['mobile']
@@ -370,6 +406,7 @@ def cover(img, layout):
 {sky_marks(layout)}
 <rect width="{w}" height="{h}" fill="url(#type-shade)"/>
 <rect width="{w}" height="{h}" fill="url(#crimson-sky)" opacity=".31"/>
+{name_stars(mobile)}
 {typography(layout)}
 </svg>
 '''
