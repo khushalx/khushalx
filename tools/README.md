@@ -1,4 +1,4 @@
-# Crimson Cosmos artwork
+# Golden Cosmos artwork
 
 From the repository root, install the build dependencies and regenerate the SVGs:
 

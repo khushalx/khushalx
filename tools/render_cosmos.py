@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build both Crimson Cosmos covers from local inputs."""
+"""Build both Golden Cosmos covers from local inputs."""
 
 import base64
 import io
@@ -16,13 +16,13 @@ ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / 'assets'
 # Tonal landmarks sampled from the profile picture and tuned for emission.
 AVATAR_RAMP = (
-    (5,   (5, 5, 9)),
-    (27,  (24, 8, 20)),
-    (78,  (70, 13, 47)),
-    (141, (132, 23, 79)),
-    (185, (180, 29, 100)),
-    (218, (218, 53, 130)),
-    (255, (241, 103, 166)),
+    (5,   (5, 5, 7)),
+    (27,  (30, 16, 8)),
+    (78,  (91, 56, 16)),
+    (141, (150, 109, 46)),
+    (185, (199, 157, 76)),
+    (218, (237, 200, 113)),
+    (255, (255, 241, 195)),
 )
 
 
@@ -191,7 +191,7 @@ def artwork():
             continue
         strength = rng.random() ** 5
         value = (6 + 147 * strength) * (1 - .55 * core[iy, ix])
-        shade = np.array((1, .61, .82) if rng.random() < .53 else (.77, .80, 1)) * value
+        shade = np.array((1, .83, .54) if rng.random() < .53 else (.90, .93, 1)) * value
         for sy in range(-2, 3):
             for sx in range(-2, 3):
                 scatter[iy + sy, ix + sx] += shade * np.exp(-(sx * sx + sy * sy) / (.40 + strength))
@@ -278,7 +278,7 @@ def sky_marks(layout):
         y = rng.normal(rad * .12, rad * 2.25)
         if x * x + y * y < (rad * 6.3) ** 2:
             continue
-        tint = rng.choice(['#FFC6E4', '#F182BA', '#D84F9A', '#9D2E73'])
+        tint = rng.choice(['#FFF0C4', '#EDC36D', '#CF9D48', '#9B6D2D'])
         dust.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{rng.uniform(.44, 1.70):.2f}" '
                     f'fill="{tint}" opacity="{rng.uniform(.25, .73):.2f}"/>')
 
@@ -289,7 +289,7 @@ def sky_marks(layout):
             distance = rng.uniform(lo, hi) * rad
             x, y = distance * np.cos(angle), distance * np.sin(angle)
             size = rng.uniform(.65, 1.65)
-            tint = rng.choice(['#D75099', '#F185BA', '#FFC6E4'])
+            tint = rng.choice(['#D9AE59', '#F6D68C', '#FFF0C4'])
             sparks.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{size:.2f}" fill="{tint}" '
                           f'opacity="{rng.uniform(.22, .61):.2f}"/>')
         return f'<g class="rotor{slow}">{"".join(sparks)}</g>'
@@ -299,7 +299,7 @@ def sky_marks(layout):
         lights = []
         for x, y, radius in layout['beacons'][parity::2]:
             lights.append(f'<circle cx="{x}" cy="{y}" r="{radius*3:.1f}" fill="url(#spark-glow)"/>'
-                          f'<circle cx="{x}" cy="{y}" r="{radius}" fill="#FFC6E4"/>')
+                          f'<circle cx="{x}" cy="{y}" r="{radius}" fill="#FFF0C4"/>')
         late = ' late' if parity else ''
         beacons.append(f'<g class="beacons{late}" opacity=".42">{"".join(lights)}</g>')
 
@@ -332,10 +332,10 @@ def typography(layout):
     x = 43 if mobile else 73
     name_size = 131 if mobile else 145
     name_y = (147, 248) if mobile else (217, 328)
-    subject = '#EDD7E7'
+    subject = '#EADDC2'
     names = (
-        lettering('Khushal', x - 4, name_y[0], name_size, '#F8F2F6', 650, -4.1),
-        lettering('Dangar', x - 4, name_y[1], name_size, '#F1E0ED', 650, -4.1),
+        lettering('Khushal', x - 4, name_y[0], name_size, '#F8F4EB', 650, -4.1),
+        lettering('Dangar', x - 4, name_y[1], name_size, '#F1E6CD', 650, -4.1),
     )
     subtitle = (
         lettering('Computer Science &', x, 315, 30, subject, 550),
@@ -369,7 +369,7 @@ def name_stars(mobile):
             continue
         points.append((x, y))
         strength = rng.random() ** 1.7
-        tint = rng.choice(['#F5E5F2', '#A6A6D0', '#D572AB'])
+        tint = rng.choice(['#F6EDDB', '#BAC4D0', '#CDA85E'])
         stars.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{.65 + .93*strength:.2f}" '
                      f'fill="{tint}" opacity="{.23 + .41*strength:.2f}"/>')
 
@@ -377,7 +377,7 @@ def name_stars(mobile):
         lights = []
         for x, y, radius in accents[parity::2]:
             lights.append(f'<circle cx="{x}" cy="{y}" r="{radius*2.6:.2f}" fill="url(#spark-glow)"/>'
-                          f'<circle cx="{x}" cy="{y}" r="{radius}" fill="#F8E4F5"/>')
+                          f'<circle cx="{x}" cy="{y}" r="{radius}" fill="#FFF0CE"/>')
         stars.append(f'<g class="beacons{phase}" opacity=".59">{"".join(lights)}</g>')
     return '<g id="name-stars">' + ''.join(stars) + '</g>'
 
@@ -388,24 +388,24 @@ def cover(img, layout):
     axis = 'x2="0" y2="1"' if mobile else ''
     stops = ((0, 1), (.20, 1), (.31, .89), (.46, .69), (.65, 0), (1, 0)) if mobile else (
         (0, 1), (.27, 1), (.43, .64), (.68, 0), (1, 0))
-    fade = ''.join(f'<stop offset="{p}" stop-color="#050509" stop-opacity="{a}"/>' for p, a in stops)
+    fade = ''.join(f'<stop offset="{p}" stop-color="#050507" stop-opacity="{a}"/>' for p, a in stops)
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" id="still" role="img" aria-labelledby="title desc">
 <!-- Generated by tools/render_cosmos.py -->
-<title id="title">Khushal Dangar — Crimson Cosmos</title>
-<desc id="desc">Computer Science &amp; Artificial Intelligence. Magenta light and glowing dust swirl around a black hole.</desc>
+<title id="title">Khushal Dangar — Golden Cosmos</title>
+<desc id="desc">Computer Science &amp; Artificial Intelligence. Golden light and glowing dust swirl around a black hole.</desc>
 {MOTION}
 <defs>
   <linearGradient id="type-shade" {axis}>{fade}</linearGradient>
-  <radialGradient id="flare-glow"><stop stop-color="#DF5099" stop-opacity=".47"/><stop offset=".42" stop-color="#A92A70" stop-opacity=".21"/><stop offset="1" stop-color="#821750" stop-opacity="0"/></radialGradient>
-  <radialGradient id="shear-glow"><stop stop-color="#F592C6" stop-opacity=".54"/><stop offset=".46" stop-color="#E66BAF" stop-opacity=".20"/><stop offset="1" stop-color="#CF5098" stop-opacity="0"/></radialGradient>
-  <radialGradient id="spark-glow"><stop stop-color="#DD9CE1" stop-opacity=".55"/><stop offset="1" stop-color="#DD9CE1" stop-opacity="0"/></radialGradient>
-  <radialGradient id="crimson-sky" cx="65%" cy="76%" r="72%"><stop stop-color="#501944" stop-opacity=".59"/><stop offset=".55" stop-color="#32203A" stop-opacity=".35"/><stop offset="1" stop-color="#1A0F22" stop-opacity="0"/></radialGradient>
+  <radialGradient id="flare-glow"><stop stop-color="#E3BB69" stop-opacity=".47"/><stop offset=".42" stop-color="#AD7A32" stop-opacity=".21"/><stop offset="1" stop-color="#80511F" stop-opacity="0"/></radialGradient>
+  <radialGradient id="shear-glow"><stop stop-color="#FFF0BE" stop-opacity=".54"/><stop offset=".46" stop-color="#F0CE86" stop-opacity=".20"/><stop offset="1" stop-color="#C9A45B" stop-opacity="0"/></radialGradient>
+  <radialGradient id="spark-glow"><stop stop-color="#FFE1A0" stop-opacity=".55"/><stop offset="1" stop-color="#FFE1A0" stop-opacity="0"/></radialGradient>
+  <radialGradient id="golden-sky" cx="65%" cy="76%" r="72%"><stop stop-color="#503615" stop-opacity=".59"/><stop offset=".55" stop-color="#302015" stop-opacity=".35"/><stop offset="1" stop-color="#19110A" stop-opacity="0"/></radialGradient>
 </defs>
-<rect width="{w}" height="{h}" fill="#050509"/>
+<rect width="{w}" height="{h}" fill="#050507"/>
 {picture_payload(img, layout)}
 {sky_marks(layout)}
 <rect width="{w}" height="{h}" fill="url(#type-shade)"/>
-<rect width="{w}" height="{h}" fill="url(#crimson-sky)" opacity=".31"/>
+<rect width="{w}" height="{h}" fill="url(#golden-sky)" opacity=".31"/>
 {name_stars(mobile)}
 {typography(layout)}
 </svg>
@@ -419,7 +419,7 @@ def main():
     mobile = dict(size=(620, 730), image=(-184, 141, .80), mobile=True,
                   beacons=((523, 400, 1.5), (216, 407, 1.25), (82, 592, 1.35), (536, 654, 1.45)))
     for suffix, layout in (('', desktop), ('-mobile', mobile)):
-        (ASSETS / f'crimson-cosmos{suffix}.svg').write_text(cover(img, layout), encoding='utf-8')
+        (ASSETS / f'golden-cosmos{suffix}.svg').write_text(cover(img, layout), encoding='utf-8')
 
 
 if __name__ == '__main__':
