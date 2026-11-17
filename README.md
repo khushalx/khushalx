@@ -2,7 +2,7 @@
   <source media="(prefers-reduced-motion: reduce) and (max-width: 900px)" srcset="./assets/crimson-cosmos-mobile.svg#still">
   <source media="(prefers-reduced-motion: reduce)" srcset="./assets/crimson-cosmos.svg#still">
   <source media="(max-width: 900px)" srcset="./assets/crimson-cosmos-mobile.svg">
-  <img src="./assets/crimson-cosmos.svg" width="100%" alt="Khushal Dangar — Computer Science &amp; Artificial Intelligence, beside a crimson black hole.">
+  <img src="./assets/crimson-cosmos.svg" width="100%" alt="Khushal Dangar — Computer Science &amp; Artificial Intelligence, beside a black hole with a magenta glow.">
 </picture>
 
 <p align="center">
